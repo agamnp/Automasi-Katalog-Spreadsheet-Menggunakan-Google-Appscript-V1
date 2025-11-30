@@ -1,19 +1,18 @@
-//     ========     Fungsi MengHapus Sheet Penerbit PPN atau Non PPN     ========
-  // ✅ Hapus Sheet PPN
+  //     ========     Fungsi MengHapus Sheet Penerbit PPN     ========
     function HapusSemuaSheetPPN() {
       ModulHapusSheetSaja("ppn");
       ModulHapusBarisSaja("ppn");
     }
-  //  
+  //     ========     Fungsi MengHapus Sheet Penerbit PPN     ========  
 
-  // ✅ Hapus Sheet Non PPN
+  //     ========     Fungsi MengHapus Sheet Penerbit Non PPN     ========
     function HapusSemuaSheetNonPPN() {
       ModulHapusSheetSaja("non ppn");
       ModulHapusBarisSaja("non ppn");
     }
-  //  
+  //     ========     Fungsi MengHapus Sheet Penerbit Non PPN     ======== 
 
-  // ✅ Modul Hapus Sheet
+  //     ========     Fungsi Utama MengHapus Sheet Penerbit PPN atau Non PPN     ========
     function ModulHapusSheetSaja(jenisYangDihapus) {
       var ss = SpreadsheetApp.getActiveSpreadsheet();
       var sheetSeleksi = ss.getSheetByName("Hasil Seleksi");
@@ -45,9 +44,7 @@
         }
       });
     }
-  //  
-  
-  // ✅ Modul Hapus Baris Sheet Seleksi
+
     function ModulHapusBarisSaja(jenisYangDihapus) {
       var ss = SpreadsheetApp.getActiveSpreadsheet();
       var sheet = ss.getSheetByName("Hasil Seleksi");
@@ -74,6 +71,4 @@
 
       Logger.log("Selesai Menghapus Daftar Sheet Di Sheet Hasil Seleksi");
     }
-  //  
-
-//     ========     Fungsi MengHapus Sheet Penerbit PPN atau Non PPN     ========
+  //     ========     Fungsi Utama MengHapus Sheet Penerbit PPN atau Non PPN     ========  

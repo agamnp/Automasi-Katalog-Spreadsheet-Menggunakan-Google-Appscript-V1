@@ -1,19 +1,19 @@
-// Atur Tampilan 1 Sheet
+//     ========     Atur Tampilan 1 Sheet    ========
   function AturTampilan1Sheet(sheet){
     modulFungsiTampilanSheetPenerbit(sheet);
   }
-//
+//     ========     Atur Tampilan 1 Sheet    ========
 
-// Atur Tampilan Semua Sheet
+//     ========     Atur Tampilan Semua Sheet    ========
   function AturTampilanSemuaSheet(){
     //PERLU DIRUBAH ============================================================================== 
       const sheetMulai = 0; 
     //PERLU DIRUBAH ==============================================================================
     modulFungsiTampilanSheetPenerbitALLSHEET(sheetMulai);
   }
-//
+//     ========     Atur Tampilan Semua Sheet    ========
 
-//     ========     Fungsi Mengatur Tampilan Sheet Penerbit    ========
+//     ========     Fungsi Utama Mengatur Tampilan Sheet Penerbit    ========
   function modulFungsiTampilanSheetPenerbit(sheet) {
     // ✅ Memeriksa Sheet Yang Aktif
       if (!sheet) {
@@ -174,9 +174,9 @@
     Logger.log('✅ Selesai Menjalankan FungsiTampilanSheetPenerbit pada: ' + nama);
   }
   
-//     ========     Fungsi Mengatur Tampilan Sheet Penerbit    ========
+//     ========     Fungsi Utama Mengatur Tampilan Sheet Penerbit    ========
 
-//     ========     Fungsi Mengatur Tampilan Sheet Penerbit    semua Sheet     ========
+//     ========     Fungsi Utama Mengatur Tampilan Sheet Penerbit semua Sheet     ========
   function modulFungsiTampilanSheetPenerbitALLSHEET(sheetMulai) {
     const spreadsheet = SpreadsheetApp.getActive();
     const semuaSheet = spreadsheet.getSheets();
@@ -190,4 +190,4 @@
       }
     });
   }
-//     ========     Fungsi Mengatur Tampilan Sheet Penerbit    semua Sheet     ========
+//     ========     Fungsi Utama Mengatur Tampilan Sheet Penerbit semua Sheet     ========
