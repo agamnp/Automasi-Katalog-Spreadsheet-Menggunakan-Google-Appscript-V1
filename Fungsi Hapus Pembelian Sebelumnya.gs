@@ -29,6 +29,11 @@
     }
   //     ========     MengHapus Pembelian Sebelumnya berdasar ISBN & e-ISBN Semua Sheet     ========
 
+
+
+
+
+
   //     ========     Fungsi Utama MengHapus Pembelian Sebelumnya 1 Sheet    ========
     function ModulHapusSudahdibeli(type) {
       const ss = SpreadsheetApp.getActiveSpreadsheet();

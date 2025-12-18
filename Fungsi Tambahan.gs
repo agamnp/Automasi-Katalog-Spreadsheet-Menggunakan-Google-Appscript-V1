@@ -55,7 +55,6 @@
   //     ========     Fungsi Cari UUID dari Katalog General     ========
 
   //     ========     Fungsi Hapus Data Di Kolom Harga Satuan     ========
-
     function HapusDataHargaSatuan() {
       const ss = SpreadsheetApp.getActiveSpreadsheet();
 
@@ -88,7 +87,6 @@
         }
       });
     }
-
   //     ========     Fungsi Hapus Data Di Kolom Harga Satuan     ========
 
   //     ========     Fungsi Cek Ketersediaan di Katalog General Berdasarkan UUID     ========
@@ -145,4 +143,83 @@
       Logger.log(`🚀 Selesai — UUID ditemukan pada ${found} baris.`);
       SpreadsheetApp.getActive().toast(`Selesai! ${found} UUID ditemukan.`);
     }
-  //     ========     Fungsi Cek Ketersediaan di Katalog General Berdasarkan UUID     ========  
+  //     ========     Fungsi Cek Ketersediaan di Katalog General Berdasarkan UUID     ========
+
+  //     ========     Fungsi Menggabungkan Semua Sheet Katalog menjadi 1 sheet     ========
+    function Gabungsemuasheet() {
+      const ss = SpreadsheetApp.getActiveSpreadsheet();
+      const targetName = "Master";
+      const logName = "LogProses";
+      const sheetExcluded = ['Form Pengadaan', 'Hasil Seleksi', 'Referensi', 'DaftarISBN', 'DaftarUUID', targetName, logName];
+      const publisherColumn = 20; // Kolom T
+
+      const props = PropertiesService.getScriptProperties();
+      const startIndex = Number(props.getProperty("sheetIndex")) || 0;
+
+      const sheets = ss.getSheets().filter(s => !sheetExcluded.includes(s.getName()));
+      if (startIndex >= sheets.length) {
+        props.deleteProperty("sheetIndex"); // Semua sheet selesai
+        return;
+      }
+
+      const targetSheet = ss.getSheetByName(targetName) || ss.insertSheet(targetName);
+      const logSheet = ss.getSheetByName(logName) || ss.insertSheet(logName);
+
+      // Batch pertama → reset Master & Log, tulis header
+      if (startIndex === 0) {
+        targetSheet.clearContents();
+        logSheet.clearContents();
+
+        const firstSheet = sheets[0];
+        const lastCol = firstSheet.getLastColumn();
+        const header = firstSheet.getRange(9, 1, 1, lastCol).getValues()[0];
+        targetSheet.getRange(1, 1, 1, header.length).setValues([header]);
+
+        logSheet.appendRow(["Timestamp", "Sheet", "Penerbit (Kolom T)", "Jumlah Baris", "Status"]);
+      }
+
+      const batchSize = 10;
+      const endIndex = Math.min(startIndex + batchSize, sheets.length);
+      const startTime = new Date().getTime();
+      let output = [];
+      let currentLastRow = targetSheet.getLastRow();
+
+      for (let i = startIndex; i < endIndex; i++) {
+        const sheet = sheets[i];
+        const lastRow = sheet.getLastRow();
+        const lastCol = sheet.getLastColumn();
+
+        let rowsAdded = 0;
+        let publisher = "";
+
+        if (lastRow >= 10) {
+          const data = sheet.getRange(10, 1, lastRow - 9, lastCol).getValues();
+
+          // Filter hanya baris yang kolom C (kolom ke-3) ada isi
+          const filteredData = data.filter(row => row[2] !== "" && row[2] !== null);
+
+          rowsAdded = filteredData.length;
+          if (rowsAdded > 0) publisher = filteredData[0][publisherColumn - 1] || "";
+
+          output = output.concat(filteredData);
+        }
+
+        // Log sheet dengan status Done
+        logSheet.appendRow([new Date(), sheet.getName(), publisher, rowsAdded, "Done"]);
+
+        // Anti-timeout safety (opsional, 5 sheet pasti aman)
+        const now = new Date().getTime();
+        if (now - startTime > 250000) break;
+      }
+
+      // Tulis hasil batch ke Master
+      if (output.length > 0) {
+        targetSheet
+          .getRange(currentLastRow + 1, 1, output.length, output[0].length)
+          .setValues(output);
+      }
+
+      // Update progress
+      props.setProperty("sheetIndex", endIndex);
+   }
+  //     ========     Fungsi Menggabungkan Semua Sheet Katalog menjadi 1 sheet     ========
