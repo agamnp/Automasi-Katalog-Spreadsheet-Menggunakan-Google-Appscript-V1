@@ -34,10 +34,11 @@
 
         // Konfigurasi filter
         const filterOptions = {
-          kodeRef: { aktif: false, nilaiDiperbolehkan: ['002.01','002.02'] },
+          kodeRef: { aktif: false, nilaiDiperbolehkan: [''] },
           tahun: { aktif: false, min: 2021, max: 2025 },
           halaman: { aktif: false, min: 151, max: 2025 },
-          harga: { aktif: false, min: 14800, max: 2025 }
+          harga: { aktif: false, min: 14800, max: 2025 },
+          kategori: { aktif: false, nilaiDiperbolehkan: [''] },  // ['fiksi', 'bahasa', 'puisi','cerpen','novel']}
         };
 
         const startRow = 10;
@@ -60,6 +61,7 @@
         const getIndex = (colName) => headers.indexOf(colName.toLowerCase());
         const idx = {
           kodeRef: getIndex("kode referensi"),
+          kategori: getIndex("kategori*"),
           tahun: getIndex("tahun terbit digital*"),
           halaman: getIndex("jumlah halaman*"),
           harga: getIndex("harga satuan")
@@ -67,24 +69,48 @@
 
         // Fungsi pengecekan baris lolos filter
         const isLolosFilter = (row) => {
-          if (filterOptions.kodeRef.aktif && idx.kodeRef !== -1) {
-            const val = String(row[idx.kodeRef]).trim();
-            if (!filterOptions.kodeRef.nilaiDiperbolehkan.includes(val)) return false;
+        let lolosKodeRef = false;
+        let lolosKategori = false;
+
+        // ===== KODE REFERENSI =====
+        if (filterOptions.kodeRef.aktif && idx.kodeRef !== -1) {
+          const val = String(row[idx.kodeRef]).trim();
+          lolosKodeRef = filterOptions.kodeRef.nilaiDiperbolehkan.includes(val);
+        }
+
+        // ===== KATEGORI =====
+        if (filterOptions.kategori.aktif) {
+          if (idx.kategori !== -1) {
+            const val = String(row[idx.kategori]).trim().toLowerCase();
+            const allowed = filterOptions.kategori.nilaiDiperbolehkan.map(v => v.toLowerCase());
+            lolosKategori = allowed.includes(val);
           }
-          if (filterOptions.tahun.aktif && idx.tahun !== -1) {
-            const val = Number(row[idx.tahun]);
-            if (isNaN(val) || val < filterOptions.tahun.min || val > filterOptions.tahun.max) return false;
-          }
-          if (filterOptions.halaman.aktif && idx.halaman !== -1) {
-            const val = Number(row[idx.halaman]);
-            if (isNaN(val) || val < filterOptions.halaman.min || val > filterOptions.halaman.max) return false;
-          }
-          if (filterOptions.harga.aktif && idx.harga !== -1) {
-            const val = Number(row[idx.harga]);
-            if (isNaN(val) || val < filterOptions.harga.min || val > filterOptions.harga.max) return false;
-          }
-          return true;
-        };
+        }
+
+        // ===== OR LOGIC UTAMA =====
+        if (filterOptions.kodeRef.aktif || filterOptions.kategori.aktif) {
+          if (!(lolosKodeRef || lolosKategori)) return false;
+        }
+
+        // ===== FILTER LAIN (AND) =====
+        if (filterOptions.tahun.aktif && idx.tahun !== -1) {
+          const val = Number(row[idx.tahun]);
+          if (isNaN(val) || val < filterOptions.tahun.min || val > filterOptions.tahun.max) return false;
+        }
+
+        if (filterOptions.halaman.aktif && idx.halaman !== -1) {
+          const val = Number(row[idx.halaman]);
+          if (isNaN(val) || val < filterOptions.halaman.min || val > filterOptions.halaman.max) return false;
+        }
+
+        if (filterOptions.harga.aktif && idx.harga !== -1) {
+          const val = Number(row[idx.harga]);
+          if (isNaN(val) || val < filterOptions.harga.min || val > filterOptions.harga.max) return false;
+        }
+
+        return true;
+      };
+
 
         // Filter data
         const dataLolos = data.filter(isLolosFilter);
